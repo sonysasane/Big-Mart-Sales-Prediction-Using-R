@@ -84,3 +84,96 @@ e <- ggplot(combi %>% group_by(Outlet_Type) %>% summarise(Count = n())) +
 
 
 plot_grid(d,e, ncol = 2)
+
+train <- read.csv(file.choose())
+head(train)
+test <- read.csv(file.choose())
+str(train)
+#Let’s quicky check the dimensions of our data, i.e., columns and rows.
+dim(train)
+dim(test)
+# We will take a quick glance over the feature names of train and test datasets.
+names(train)
+names(test)
+#Combine Train and TestTo explore data in any data science competition, 
+#it is advisable to append test data to the train data. Combining train and test sets saves a 
+#lot of time and effort because if we have to make any modification in the data, we would make
+#the change only in the combined data and not in train and test data separately. Later we can always split the combined data back to train and test.
+test$Item_Outlet_Sales <- NA
+combi <- rbind(train,test)
+dim(combi)
+train <- combi[1:nrow(train),]
+dim(train)
+# BIVARIATE ANALYSIS: Exploring each independent variable
+#against dependent variable
+str(train)
+install.packages("ggplot2")
+
+install.packages("cowplot")
+library(ggplot2)
+library(cowplot)
+# using scatter plots
+p1 <- ggplot(train) + geom_point(aes(Item_Weight, Item_Outlet_Sales), color = "red", alpha= 0.6) + 
+  theme(axis.title = element_text(size = 8.5))
+                                                                                                          
+p2 <- ggplot(train) + geom_point(aes(Item_Visibility, Item_Outlet_Sales), color = "Darkblue", alpha = 0.3)+
+  theme(axis.title = element_text(size = 8.5))
+
+
+p3<- ggplot(train) + geom_point(aes(Item_MRP, Item_Outlet_Sales), color = "Darkgreen", alpha= 0.3)+
+  theme(axis.title = element_text(size = 8.5))
+
+
+second_row <- plot_grid(p2,p3,nrow = 1,ncol = 2)
+plot_grid(p1, second_row,nrow = 2)
+
+# Item_Outlet_Sales is spread well across the entire range of the Item_Weight without any obvious pattern.
+# In Item_Visibility vs Item_Outlet_Sales, there is a string of points at Item_Visibility = 0.0 which seems strange as item visibility cannot be completely zero. We will take note of this issue and deal with it in the later stages.
+# In the third plot of Item_MRP vs Item_Outlet_Sales, we can clearly see 4 segments of prices that can be used in feature engineering to create a new variable.
+
+# Target Variable vs Independent Categorical Variables
+train$Item_Fat_Content[train$Item_Fat_Content == 'LF'] <- "Low Fat"
+train$Item_Fat_Content[train$Item_Fat_Content == 'low fat'] <- "Low Fat"
+train$Item_Fat_Content[train$Item_Fat_Content == 'reg'] <- "Regular"
+a1 <- ggplot(train) + geom_violin(aes(Item_Fat_Content, Item_Outlet_Sales), fill ="magenta") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.text =  element_text(size = 6),
+        axis.title = element_text(size=8.5))
+a2 <- ggplot(train) + geom_violin(aes(Item_Type, Item_Outlet_Sales), fill = "magenta") +
+  theme(axis.text.x = element_text(angle = 45,hjust = 1), axis.text = element_text(size = 6),
+        axis.title = element_text(size = 8.5))
+a3 <- ggplot(train) + geom_violin(aes(Outlet_Identifier, Item_Outlet_Sales), fill = "magenta") +
+  theme(axis.text.x = element_text(angle = 45,hjust = 1), axis.text = element_text(size = 6),
+        axis.title = element_text(size = 8.5))
+
+
+second_row2 <- plot_grid(a1,a3, ncol = 2)
+plot_grid(a2,second_row2, nrow = 2)
+# # Distribution of Item_Outlet_Sales across the categories of Item_Type is not very distinct and 
+# same is the case with Item_Fat_Content.
+# # The distribution for OUT010 and OUT019 categories of Outlet_Identifier are quite 
+# similar and very much different from the rest of the categories of Outlet_Identifier
+a4 <- ggplot(train) + geom_violin(aes(Outlet_Size, Item_Outlet_Sales), fill = "magenta") +
+  theme(axis.text.x = element_text(angle = 45,hjust = 1), axis.text = element_text(size = 8),
+        axis.title = element_text(size = 8.5))
+a5 <- ggplot(train) + geom_violin(aes(Outlet_Location_Type, Item_Outlet_Sales), fill = "magenta") +
+  theme(axis.text.x = element_text(angle = 45,hjust = 1), axis.text = element_text(size = 8),
+        axis.title = element_text(size = 8.5))
+a6 <- ggplot(train) + geom_violin(aes(Outlet_Type, Item_Outlet_Sales), fill = "magenta") +
+  theme(axis.text.x = element_text(angle = 45,hjust = 1), axis.text = element_text(size = 8),
+        axis.title = element_text(size = 8.5))
+
+plot_grid(a5,a6, nrow = 2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
