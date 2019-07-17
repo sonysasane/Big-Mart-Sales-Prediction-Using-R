@@ -163,8 +163,29 @@ a6 <- ggplot(train) + geom_violin(aes(Outlet_Type, Item_Outlet_Sales), fill = "m
         axis.title = element_text(size = 8.5))
 
 plot_grid(a5,a6, nrow = 2)
+# replacing missing values
 
+sum(is.na(combi$Item_Weight))
+str(combi)
+sum(is.na(combi$Item_Visibility))
+sum(is.na(combi$Item_Fat_Content))
+sum(is.na(combi$Item_Type))
+sum(is.na(combi$Item_MRP))
+sum(is.na(combi$Item_Outlet_Sales))
+# # we have missing values in Item_Weight and Item_Outlet_Sales. Missing data in Item_Outlet_Sales can be 
+# ignored since they belong to the test dataset. We’ll now impute Item_Weight with mean weight based on 
+# the Item_Identifier variable.
+# to replace null values in item weight use ifelse function
+combi$Item_Weight <- ifelse(is.na(combi$Item_Weight), mean(combi$Item_Weight, na.rm=TRUE), combi$Item_Weight)
+# checking on null values
+sum(is.na(combi$Item_Weight))
+#Replacing 0’s in Item_Visibility variable
+ggplot(combi) + geom_histogram(aes(Item_Visibility), bin = 100)
+sum(combi$Item_Visibility==0)
+combi$Item_Visibility <- ifelse(combi$Item_Visibility == 0, mean(combi$Item_Visibility, na.rm = TRUE),
+                                combi$Item_Visibility)
 
+ggplot(combi) + geom_histogram(aes(Item_Visibility), bin = 100)
 
 
 
